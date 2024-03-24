@@ -1,0 +1,29 @@
+[package]
+name = "yapp"
+version = "0.1.0"
+edition = "2021"
+description = "Yet Another Password Prompt"
+license = "MIT"
+authors = ["Piotr Karasinski"]
+readme = "README.md"
+repository = "https://github.com/caleb9/yacc"
+keywords = [
+    "password",
+    "prompt",
+    "terminal",
+    "console",
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+console = "0.15.8"
+
+[[example]]
+name = "mock_yacc"
+path = "examples/mock_yacc.rs"
+crate-type = ["staticlib"]
+test = true
+
+[dev-dependencies]
+mockall = "0.12.*"
