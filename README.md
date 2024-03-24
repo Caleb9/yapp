@@ -9,7 +9,7 @@ testable password prompt for CLI apps.
 ## Features
 
 * Reads user passwords from the input, optionally with a prompt and
-  echoing replacement symbols (*, or another of your choice).
+  echoing replacement symbols (`*`, or another of your choice).
 * Reads passwords interactively:
   ```bash
   cargo run --example simple
