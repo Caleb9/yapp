@@ -1,12 +1,12 @@
 [package]
 name = "yapp"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Yet Another Password Prompt"
 license = "MIT"
 authors = ["Piotr Karasinski"]
 readme = "README.md"
-repository = "https://github.com/caleb9/yacc"
+repository = "https://github.com/caleb9/yapp"
 keywords = [
     "password",
     "prompt",
@@ -21,7 +21,7 @@ console = "0.15.8"
 
 [[example]]
 name = "mock_yacc"
-path = "examples/mock_yacc.rs"
+path = "examples/mock_yapp.rs"
 crate-type = ["staticlib"]
 test = true
 

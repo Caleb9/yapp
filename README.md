@@ -2,7 +2,7 @@
 
 Yet Another Password Prompt
 
-`yacc` is a small library for Rust based on
+`yapp` is a small library for Rust based on
 [console](https://github.com/console-rs/console) to provide simple,
 testable password prompt for CLI apps.
 
@@ -19,7 +19,7 @@ testable password prompt for CLI apps.
   echo "P@55w0rd\n" | cargo run --example simple
   ```
 * Using the `PasswordReader` trait in your code allows for mocking the
-  entire library in tests (see an [example](examples/mock_yacc.rs))
+  entire library in tests (see an [example](examples/mock_yapp))
 * Thanks to using `console` underneath, it handles unicode correctly
   (tested on Windows and Linux).
 
@@ -29,7 +29,7 @@ testable password prompt for CLI apps.
 use std::io;
 use yapp::PasswordReader;
 
-fn my_func<P: PasswordReader>(yacc: &mut P) {
+fn my_func<P: PasswordReader>(yapp: &mut P) {
     let password = yapp.read_password_with_prompt("Type your password: ").unwrap();
     println!("You typed: {password}");
 }

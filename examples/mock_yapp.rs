@@ -15,8 +15,8 @@
 use std::io;
 use yapp::PasswordReader;
 
-fn _your_func<P: PasswordReader>(yacc: &mut P) -> io::Result<String> {
-    let password = yacc.read_password()?;
+fn _your_func<P: PasswordReader>(yapp: &mut P) -> io::Result<String> {
+    let password = yapp.read_password()?;
     Ok(format!("Sending \"{password}\" to ether"))
 }
 
