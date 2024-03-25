@@ -20,7 +20,7 @@ keywords = [
 console = "0.15.8"
 
 [[example]]
-name = "mock_yacc"
+name = "mock_yapp"
 path = "examples/mock_yapp.rs"
 crate-type = ["staticlib"]
 test = true
