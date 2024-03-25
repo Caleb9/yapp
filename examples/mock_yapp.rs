@@ -32,7 +32,9 @@ mod tests {
         impl PasswordReader for Yacc {
             fn read_password(&mut self) -> io::Result<String>;
             fn read_password_with_prompt(&mut self, prompt: &str) -> io::Result<String>;
-            fn set_echo_symbol<S: 'static + Into<Option<char>>>(&mut self, symbol: S);
+            fn with_echo_symbol<C>(self, c: C) -> Self
+            where
+                C: 'static + Into<Option<char>>;
         }
     }
 

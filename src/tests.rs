@@ -72,9 +72,8 @@ fn password_reader_prints_prompt() {
 fn password_reader_prints_replacement_symbols() {
     StdinMock::set_is_terminal(true);
     TermMock::setup_keys(&[Key::Char('a'), Key::Char('b'), Key::Char('c'), Key::Enter]);
-    let mut sut = super::new();
+    let mut sut = super::new().with_echo_symbol('*');
 
-    sut.set_echo_symbol('*');
     sut.read_password().unwrap();
 
     let term_bytes = TermMock::get_output();
