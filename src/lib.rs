@@ -1,7 +1,7 @@
 //! A library for reading passwords from the user.
 //!
 //! This library provides a `PasswordReader` trait for reading passwords from the user.
-//! It includes a default implementation of the `PasswordReader` trait, `PasswordReaderImpl`,
+//! It includes a default implementation of the `PasswordReader` trait, `Yapp`,
 //! which can read passwords from an interactive terminal or from standard input.
 //! The library also includes a `new` function for creating a new `PasswordReader` instance.
 
@@ -38,18 +38,16 @@ pub trait PasswordReader {
 
 /// Creates a new password reader.
 pub fn new() -> impl PasswordReader {
-    PasswordReaderImpl {
-        replacement_symbol: None,
-    }
+    Yapp::default()
 }
 
 /// An implementation of the `PasswordReader` trait.
-#[derive(Debug)]
-struct PasswordReaderImpl {
-    replacement_symbol: Option<char>,
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Yapp {
+    echo_symbol: Option<char>,
 }
 
-impl PasswordReader for PasswordReaderImpl {
+impl PasswordReader for Yapp {
     fn read_password(&mut self) -> io::Result<String> {
         if self.is_interactive() {
             self.read_interactive()
@@ -65,11 +63,17 @@ impl PasswordReader for PasswordReaderImpl {
     }
 
     fn set_echo_symbol<S: Into<Option<char>>>(&mut self, symbol: S) {
-        self.replacement_symbol = symbol.into()
+        self.echo_symbol = symbol.into()
     }
 }
 
-impl PasswordReaderImpl {
+impl Yapp {
+    /// Changes the echo symbol on an instance of `Yapp`
+    pub fn with_echo_symbol(mut self, s: char) -> Self {
+        self.echo_symbol = Some(s);
+        self
+    }
+
     /// Checks if the terminal is interactive.
     fn is_interactive(&self) -> bool {
         stdin().is_terminal()
@@ -80,7 +84,7 @@ impl PasswordReaderImpl {
         let mut input = String::new();
         let stdin = stdin();
         stdin.read_line(&mut input)?;
-        if let Some(s) = self.replacement_symbol {
+        if let Some(s) = self.echo_symbol {
             writeln!(stdout(), "{}", format!("{s}").repeat(input.len()))?;
         }
         Ok(input)
@@ -95,7 +99,7 @@ impl PasswordReaderImpl {
             match key {
                 Key::Char(c) => {
                     input.push(c);
-                    if let Some(s) = self.replacement_symbol {
+                    if let Some(s) = self.echo_symbol {
                         write!(term, "{s}")?;
                     }
                 }
