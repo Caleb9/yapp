@@ -1,5 +1,7 @@
 # YAPP
 
+[![Crates.io Version](https://img.shields.io/crates/v/yapp)](https://crates.io/crates/yapp)
+
 Yet Another Password Prompt
 
 `yapp` is a small library for Rust based on
