@@ -19,7 +19,7 @@ testable password prompt for CLI apps.
   echo "P@55w0rd\n" | cargo run --example simple
   ```
 * Using the `PasswordReader` trait in your code allows for mocking the
-  entire library in tests (see an [example](examples/mock_yapp))
+  entire library in tests (see an [example](examples/mock_yapp.rs))
 * Thanks to using `console` underneath, it handles unicode correctly
   (tested on Windows and Linux).
 
