@@ -26,7 +26,6 @@ testable password prompt for CLI apps.
 ## Usage Example
 
 ```rust
-use std::io;
 use yapp::PasswordReader;
 
 fn my_func<P: PasswordReader>(yapp: &mut P) {

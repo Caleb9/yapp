@@ -15,10 +15,10 @@ use {
 };
 
 #[cfg(test)]
-use mocks::{stdin, stdout, TermMock as Term};
+use tests::mocks::{stdin, stdout, TermMock as Term};
 
 #[cfg(test)]
-mod mocks;
+mod tests;
 
 /// A trait for reading passwords from the user.
 ///
@@ -81,7 +81,7 @@ impl PasswordReaderImpl {
         let stdin = stdin();
         stdin.read_line(&mut input)?;
         if let Some(s) = self.replacement_symbol {
-            write!(stdout(), "{}\n", format!("{s}").repeat(input.len()))?;
+            writeln!(stdout(), "{}", format!("{s}").repeat(input.len()))?;
         }
         Ok(input)
     }
@@ -111,95 +111,5 @@ impl PasswordReaderImpl {
             }
         }
         Ok(input)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{
-        mocks::{StdinMock, TermMock},
-        PasswordReader,
-    };
-    use crate::mocks::StdOutMock;
-    use console::Key;
-
-    #[test]
-    fn when_shell_is_interactive_password_reader_intercepts_keystrokes() {
-        StdinMock::set_is_terminal(true);
-        TermMock::setup_keys(&[
-            Key::Char('a'),
-            Key::Unknown,
-            Key::Char('b'),
-            Key::Char('z'),
-            Key::Backspace,
-            Key::Char('c'),
-            Key::Enter,
-        ]);
-        let mut sut = super::new();
-
-        let result = sut.read_password();
-
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap(), "abc");
-    }
-
-    #[test]
-    fn when_shell_is_interactive_password_reader_correctly_handles_backspace() {
-        StdinMock::set_is_terminal(true);
-        TermMock::setup_keys(&[
-            Key::Char('a'),
-            Key::Char('b'),
-            Key::Char('c'),
-            Key::Backspace,
-            Key::Backspace,
-            Key::Backspace,
-            Key::Backspace,
-            Key::Enter,
-        ]);
-        let mut sut = super::new();
-
-        let result = sut.read_password();
-
-        assert!(result.is_ok());
-        assert!(result.unwrap().is_empty());
-    }
-
-    #[test]
-    fn when_shell_is_not_interactive_password_reader_reads_from_stdin() {
-        StdinMock::set_is_terminal(false);
-        StdinMock::set_input("P455w0rd!");
-        let mut sut = super::new();
-
-        let result = sut.read_password();
-
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap(), "P455w0rd!");
-    }
-
-    #[test]
-    fn password_reader_prints_prompt() {
-        StdinMock::set_is_terminal(true);
-        TermMock::setup_keys(&[Key::Char('a'), Key::Char('b'), Key::Char('c'), Key::Enter]);
-        let mut sut = super::new();
-
-        sut.read_password_with_prompt("Type a password: ").unwrap();
-
-        let stdout_bytes = StdOutMock::get_output();
-        let stdout_string = String::from_utf8_lossy(&stdout_bytes);
-        assert_eq!(stdout_string, "Type a password: ");
-    }
-
-    #[test]
-    fn password_reader_prints_replacement_symbols() {
-        StdinMock::set_is_terminal(true);
-        TermMock::setup_keys(&[Key::Char('a'), Key::Char('b'), Key::Char('c'), Key::Enter]);
-        let mut sut = super::new();
-
-        sut.set_echo_symbol('*');
-        sut.read_password().unwrap();
-
-        let term_bytes = TermMock::get_output();
-        let term_string = String::from_utf8_lossy(&term_bytes);
-        assert_eq!(term_string, "***\n");
     }
 }
