@@ -20,8 +20,10 @@ testable password prompt for CLI apps.
   ```bash
   echo "P@55w0rd\n" | cargo run --example simple
   ```
-* Using the `PasswordReader` trait in your code allows for mocking the
-  entire library in tests (see an [example](examples/mock_yapp.rs))
+* Using the `PasswordReader` (optionally `PasswordReader +
+  IsInteractive`) trait in your code allows for mocking the entire
+  library in tests (see an [example1](examples/mock_yapp.rs) and
+  [example2](examples/mock_yapp_with_is_interactive.rs))
 * Thanks to using the `console` library underneath, it handles unicode
   correctly (tested on Windows and Linux).
 
@@ -42,7 +44,7 @@ fn main() {
 ```
 
 The `yapp::new()` function returns an instance of `PasswordReader`
-trait. Alternatively, instantiate with `Yapp::default()` to use a
-concrete struct type.
+trait. Alternatively, instantiate with `yapp::Yapp::default()` to use
+the concrete struct type.
 
 See [examples](examples/) for more.

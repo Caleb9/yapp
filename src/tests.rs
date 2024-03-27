@@ -1,4 +1,4 @@
-use super::PasswordReader;
+use super::{IsInteractive, PasswordReader};
 use console::Key;
 use mocks::{StdOutMock, StdinMock, TermMock};
 
@@ -79,6 +79,20 @@ fn password_reader_prints_replacement_symbols() {
     let term_bytes = TermMock::get_output();
     let term_string = String::from_utf8_lossy(&term_bytes);
     assert_eq!(term_string, "***\n");
+}
+
+#[test]
+fn when_stdin_is_terminal_then_password_reader_is_interactive() {
+    StdinMock::set_is_terminal(true);
+
+    assert!(super::new().is_interactive());
+}
+
+#[test]
+fn when_stdin_is_not_terminal_then_password_reader_is_not_interactive() {
+    StdinMock::set_is_terminal(false);
+
+    assert!(!super::new().is_interactive());
 }
 
 pub(crate) mod mocks {

@@ -4,10 +4,13 @@
 //!
 //! A library for reading passwords from the user.
 //!
-//! This library provides a `PasswordReader` trait for reading passwords from the user.
-//! It includes a default implementation of the `PasswordReader` trait, `Yapp`,
+//! This library provides a `PasswordReader` trait for reading passwords from the user, and
+//! `IsInteractive` trait for checking if terminal is attended by the user or e.g. ran as a
+//! background service.
+//! It includes a default implementation of the `PasswordReader` and `IsInteractive` traits, `Yapp`,
 //! which can read passwords from an interactive terminal or from standard input.
-//! The library also includes a `new` function for creating a new `PasswordReader` instance.
+//! The library also includes a `new` function for creating a new `PasswordReader + IsInteractive`
+//! instance.
 //!
 //! ### Features
 //!
@@ -15,9 +18,10 @@
 //!   echoing replacement symbols (`*`, or another of your choice).
 //! * Reads passwords interactively or non-interactively (e.g. when input is redirected through
 //!   a pipe).
-//! * Using the `PasswordReader` trait in your code allows for mocking the
-//!   entire library in tests
-//!   (see an [example](https://github.com/Caleb9/yapp/blob/main/examples/mock_yapp.rs))
+//! * Using the `PasswordReader` (optionally `PasswordReader + IsInteractive`) trait in your code
+//!   allows for mocking the entire library in tests
+//!   (see an [example1](https://github.com/Caleb9/yapp/blob/main/examples/mock_yapp.rs) and
+//!   [example2](https://github.com/Caleb9/yapp/blob/main/examples/mock_yapp_with_is_interactive.rs))
 //! * Thanks to using the `console` library underneath, it handles unicode
 //!   correctly (tested on Windows and Linux).
 //!
@@ -37,8 +41,8 @@
 //! }
 //! ```
 //!
-//! The `yapp::new()` function returns an instance of `PasswordReader`
-//! trait. Alternatively, instantiate with `Yapp::default()` to use a
+//! The `yapp::new()` function returns an instance of `PasswordReader + IsInteractive`
+//! traits. Alternatively, instantiate with `yapp::Yapp::default()` to use the
 //! concrete struct type.
 //!
 //! See [examples](https://github.com/Caleb9/yapp/tree/main/examples) for more.
@@ -76,8 +80,17 @@ pub trait PasswordReader {
         C: 'static + Into<Option<char>>;
 }
 
+/// A trait providing interactivity check for `Yapp`
+pub trait IsInteractive {
+    /// Checks if the terminal is interactive.
+    ///
+    /// A terminal is not interactive when stdin is redirected, e.g. another process
+    /// pipes its output to this process' input.
+    fn is_interactive(&self) -> bool;
+}
+
 /// Creates a new password reader. Returns an instance of `PasswordReader` trait.
-pub fn new() -> impl PasswordReader {
+pub fn new() -> impl PasswordReader + IsInteractive {
     Yapp::default()
 }
 
@@ -104,17 +117,23 @@ impl PasswordReader for Yapp {
 
     fn with_echo_symbol<C>(mut self, s: C) -> Self
     where
-        C: 'static + Into<Option<char>>,
+        C: Into<Option<char>>,
     {
         self.echo_symbol = s.into();
         self
     }
 }
 
-impl Yapp {
-    /// Checks if the terminal is interactive.
+impl IsInteractive for Yapp {
     fn is_interactive(&self) -> bool {
         stdin().is_terminal()
+    }
+}
+
+impl Yapp {
+    /// Create new Yapp instance without echo symbol
+    pub const fn new() -> Self {
+        Yapp { echo_symbol: None }
     }
 
     /// Reads a password from a non-interactive terminal.
