@@ -20,7 +20,7 @@ rust-version = "1.70.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-console = "0.15.8"
+console = "0.15.10"
 
 [[example]]
 name = "mock_yapp"
