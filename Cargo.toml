@@ -14,7 +14,7 @@ keywords = [
     "console",
     "cli",
 ]
-rust-version = "1.70.0"
+rust-version = "1.71"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -35,4 +35,4 @@ crate-type = ["staticlib"]
 test = true
 
 [dev-dependencies]
-mockall = "0.12.*"
+mockall = "0.13"

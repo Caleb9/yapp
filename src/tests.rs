@@ -183,7 +183,7 @@ pub(crate) mod mocks {
         pub fn read_line(&self, buf: &mut String) -> io::Result<usize> {
             STDIN_INPUT.with_borrow_mut(|stdin| {
                 buf.push_str(stdin);
-                Ok(stdin.as_bytes().len())
+                Ok(stdin.len())
             })
         }
     }
