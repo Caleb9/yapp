@@ -15,7 +15,12 @@
 use std::io;
 use yapp::PasswordReader;
 
-fn _your_func<P: PasswordReader>(yapp: &mut P) -> io::Result<String> {
+fn _your_func(yapp: &mut impl PasswordReader) -> io::Result<String> {
+    let password = yapp.read_password()?;
+    Ok(format!("Sending \"{password}\" to ether"))
+}
+
+fn _your_func_dyn(yapp: &mut dyn PasswordReader) -> io::Result<String> {
     let password = yapp.read_password()?;
     Ok(format!("Sending \"{password}\" to ether"))
 }
@@ -32,9 +37,6 @@ mod tests {
         impl PasswordReader for Yacc {
             fn read_password(&mut self) -> io::Result<String>;
             fn read_password_with_prompt(&mut self, prompt: &str) -> io::Result<String>;
-            fn with_echo_symbol<C>(self, c: C) -> Self
-            where
-                C: 'static + Into<Option<char>>;
         }
     }
 
@@ -46,6 +48,19 @@ mod tests {
             .return_once(|| Ok(String::from("P455w0rd!")));
 
         let result = _your_func(&mut yacc_mock);
+
+        assert!(result.is_ok());
+        assert_eq!("Sending \"P455w0rd!\" to ether", result.unwrap())
+    }
+
+    #[test]
+    fn replace_yacc_with_dyn_mock() {
+        let mut yacc_mock = MockYacc::new();
+        yacc_mock
+            .expect_read_password()
+            .return_once(|| Ok(String::from("P455w0rd!")));
+
+        let result = _your_func_dyn(&mut yacc_mock);
 
         assert!(result.is_ok());
         assert_eq!("Sending \"P455w0rd!\" to ether", result.unwrap())

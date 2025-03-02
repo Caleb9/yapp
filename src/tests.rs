@@ -1,4 +1,4 @@
-use super::{IsInteractive, PasswordReader};
+use super::{IsInteractive, PasswordReader, Yapp};
 use console::Key;
 use mocks::{StdOutMock, StdinMock, TermMock};
 
@@ -14,7 +14,7 @@ fn when_shell_is_interactive_password_reader_intercepts_keystrokes() {
         Key::Char('c'),
         Key::Enter,
     ]);
-    let mut sut = super::new();
+    let mut sut = Yapp::new();
 
     let result = sut.read_password();
 
@@ -35,7 +35,7 @@ fn when_shell_is_interactive_password_reader_correctly_handles_backspace() {
         Key::Backspace,
         Key::Enter,
     ]);
-    let mut sut = super::new();
+    let mut sut = Yapp::new();
 
     let result = sut.read_password();
 
@@ -47,7 +47,7 @@ fn when_shell_is_interactive_password_reader_correctly_handles_backspace() {
 fn when_shell_is_not_interactive_password_reader_reads_from_stdin() {
     StdinMock::set_is_terminal(false);
     StdinMock::set_input("P455w0rd!");
-    let mut sut = super::new();
+    let mut sut = Yapp::new();
 
     let result = sut.read_password();
 
@@ -59,7 +59,7 @@ fn when_shell_is_not_interactive_password_reader_reads_from_stdin() {
 fn password_reader_prints_prompt() {
     StdinMock::set_is_terminal(true);
     TermMock::setup_keys(&[Key::Char('a'), Key::Char('b'), Key::Char('c'), Key::Enter]);
-    let mut sut = super::new();
+    let mut sut = Yapp::new();
 
     sut.read_password_with_prompt("Type a password: ").unwrap();
 
@@ -72,7 +72,7 @@ fn password_reader_prints_prompt() {
 fn password_reader_prints_replacement_symbols() {
     StdinMock::set_is_terminal(true);
     TermMock::setup_keys(&[Key::Char('a'), Key::Char('b'), Key::Char('c'), Key::Enter]);
-    let mut sut = super::new().with_echo_symbol('*');
+    let mut sut = Yapp::new().with_echo_symbol('*');
 
     sut.read_password().unwrap();
 
@@ -85,14 +85,14 @@ fn password_reader_prints_replacement_symbols() {
 fn when_stdin_is_terminal_then_password_reader_is_interactive() {
     StdinMock::set_is_terminal(true);
 
-    assert!(super::new().is_interactive());
+    assert!(Yapp::new().is_interactive());
 }
 
 #[test]
 fn when_stdin_is_not_terminal_then_password_reader_is_not_interactive() {
     StdinMock::set_is_terminal(false);
 
-    assert!(!super::new().is_interactive());
+    assert!(!Yapp::new().is_interactive());
 }
 
 pub(crate) mod mocks {

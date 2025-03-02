@@ -1,6 +1,6 @@
 [package]
 name = "yapp"
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 description = "Yet Another Password Prompt"
 license = "MIT"
@@ -20,7 +20,7 @@ rust-version = "1.71"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-console = "0.15.10"
+console = "0.15.11"
 
 [[example]]
 name = "mock_yapp"

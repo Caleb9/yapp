@@ -1,9 +1,10 @@
 use std::io;
 use yapp::{IsInteractive, PasswordReader};
 
-fn _tested_func_with_retry_logic<P: PasswordReader + IsInteractive>(
-    yapp: &mut P,
-) -> io::Result<String> {
+fn _tested_func_with_retry_logic<P>(yapp: &mut P) -> io::Result<String>
+where
+    P: PasswordReader + IsInteractive,
+{
     let mut password: String = String::from("non empty string");
     if yapp.is_interactive() {
         while password.is_empty() {
@@ -27,9 +28,6 @@ mod tests {
         impl PasswordReader for Yacc {
             fn read_password(&mut self) -> io::Result<String>;
             fn read_password_with_prompt(&mut self, prompt: &str) -> io::Result<String>;
-            fn with_echo_symbol<C>(self, c: C) -> Self
-            where
-                C: 'static + Into<Option<char>>;
         }
 
         // Optionally add `IsInteractive` if you need to mock `is_interactive` method.

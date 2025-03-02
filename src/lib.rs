@@ -9,8 +9,6 @@
 //! background service.
 //! It includes a default implementation of the `PasswordReader` and `IsInteractive` traits, `Yapp`,
 //! which can read passwords from an interactive terminal or from standard input.
-//! The library also includes a `new` function for creating a new `PasswordReader + IsInteractive`
-//! instance.
 //!
 //! ### Features
 //!
@@ -22,28 +20,30 @@
 //!   allows for mocking the entire library in tests
 //!   (see an [example1](https://github.com/Caleb9/yapp/blob/main/examples/mock_yapp.rs) and
 //!   [example2](https://github.com/Caleb9/yapp/blob/main/examples/mock_yapp_with_is_interactive.rs))
-//! * Thanks to using the `console` library underneath, it handles unicode
+//! * Thanks to using the `console` library underneath, it handles Unicode
 //!   correctly (tested on Windows and Linux).
 //!
 //! ### Usage Example
 //!
 //! ```rust
-//! use yapp::PasswordReader;
+//! use yapp::{PasswordReader, Yapp};
 //!
 //! fn my_func<P: PasswordReader>(yapp: &mut P) {
 //!     let password = yapp.read_password_with_prompt("Type your password: ").unwrap();
 //!     println!("You typed: {password}");
 //! }
 //!
+//! fn my_func_dyn(yapp: &mut dyn PasswordReader) {
+//!     let password = yapp.read_password_with_prompt("Type your password: ").unwrap();
+//!     println!("You typed: {password}");
+//! }
+//!
 //! fn main() {
-//!     let mut yapp = yapp::new().with_echo_symbol('*');
+//!     let mut yapp = Yapp::new().with_echo_symbol('*');
 //!     my_func(&mut yapp);
+//!     my_func_dyn(&mut yapp);
 //! }
 //! ```
-//!
-//! The `yapp::new()` function returns an instance of `PasswordReader + IsInteractive`
-//! traits. Alternatively, instantiate with `yapp::Yapp::default()` to use the
-//! concrete struct type.
 //!
 //! See [examples](https://github.com/Caleb9/yapp/tree/main/examples) for more.
 
@@ -63,21 +63,12 @@ use tests::mocks::{stdin, stdout, TermMock as Term};
 mod tests;
 
 /// A trait for reading passwords from the user.
-///
-/// Use the `new` function to obtain a new instance
 pub trait PasswordReader {
     /// Reads a password from the user.
     fn read_password(&mut self) -> io::Result<String>;
 
     /// Reads a password from the user with a prompt.
     fn read_password_with_prompt(&mut self, prompt: &str) -> io::Result<String>;
-
-    /// Sets the echoed replacement symbol for the password characters.
-    ///
-    /// Set to None to not echo any characters
-    fn with_echo_symbol<C>(self, c: C) -> Self
-    where
-        C: 'static + Into<Option<char>>;
 }
 
 /// A trait providing interactivity check for `Yapp`
@@ -87,11 +78,6 @@ pub trait IsInteractive {
     /// A terminal is not interactive when stdin is redirected, e.g. another process
     /// pipes its output to this process' input.
     fn is_interactive(&self) -> bool;
-}
-
-/// Creates a new password reader. Returns an instance of `PasswordReader` trait.
-pub fn new() -> impl PasswordReader + IsInteractive {
-    Yapp::default()
 }
 
 /// An implementation of the `PasswordReader` trait.
@@ -114,14 +100,6 @@ impl PasswordReader for Yapp {
         stdout().flush()?;
         self.read_password()
     }
-
-    fn with_echo_symbol<C>(mut self, s: C) -> Self
-    where
-        C: Into<Option<char>>,
-    {
-        self.echo_symbol = s.into();
-        self
-    }
 }
 
 impl IsInteractive for Yapp {
@@ -134,6 +112,17 @@ impl Yapp {
     /// Create new Yapp instance without echo symbol
     pub const fn new() -> Self {
         Yapp { echo_symbol: None }
+    }
+
+    /// Sets the echoed replacement symbol for the password characters.
+    ///
+    /// Set to None to not echo any characters
+    pub fn with_echo_symbol<C>(mut self, s: C) -> Self
+    where
+        C: Into<Option<char>>,
+    {
+        self.echo_symbol = s.into();
+        self
     }
 
     /// Reads a password from a non-interactive terminal.

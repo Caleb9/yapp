@@ -43,8 +43,18 @@ fn main() {
 }
 ```
 
-The `yapp::new()` function returns an instance of `PasswordReader`
-trait. Alternatively, instantiate with `yapp::Yapp::default()` to use
-the concrete struct type.
+```rust
+use yapp::PasswordReader;
+
+fn my_func(yapp: &mut dyn PasswordReader) {
+    let password = yapp.read_password_with_prompt("Type your password: ").unwrap();
+    println!("You typed: {password}");
+}
+
+fn main() {
+    let mut yapp = yapp::new().with_echo_symbol('*');
+    my_func(&mut yapp);
+}
+```
 
 See [examples](examples/) for more.
