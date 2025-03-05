@@ -30,7 +30,7 @@ testable password prompt for CLI apps.
 ## Usage Example
 
 ```rust
-use yapp::PasswordReader;
+use yapp::{PasswordReader, Yapp};
 
 fn my_func<P: PasswordReader>(yapp: &mut P) {
     let password = yapp.read_password_with_prompt("Type your password: ").unwrap();
@@ -38,13 +38,13 @@ fn my_func<P: PasswordReader>(yapp: &mut P) {
 }
 
 fn main() {
-    let mut yapp = yapp::new().with_echo_symbol('*');
+    let mut yapp = Yapp::new().with_echo_symbol('*');
     my_func(&mut yapp);
 }
 ```
 
 ```rust
-use yapp::PasswordReader;
+use yapp::{PasswordReader, Yapp};
 
 fn my_func(yapp: &mut dyn PasswordReader) {
     let password = yapp.read_password_with_prompt("Type your password: ").unwrap();
@@ -52,7 +52,7 @@ fn my_func(yapp: &mut dyn PasswordReader) {
 }
 
 fn main() {
-    let mut yapp = yapp::new().with_echo_symbol('*');
+    let mut yapp = Yapp::new().with_echo_symbol('*');
     my_func(&mut yapp);
 }
 ```
